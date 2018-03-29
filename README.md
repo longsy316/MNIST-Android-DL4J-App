@@ -4,4 +4,4 @@ The app is built in Java using Deeplearning4j library. The model is a 3 layer co
 The model is trained on MNIST standard dataset and saved to disk.<br> 
 Inferencing is done by loading the saved model (from internal storage, ~3MB in size) everytime the app is started.
 
-<img src="https://github.com/pawanpatil94/MNIST-Android-App/blob/master/MNIST-app-demo.gif" height=640px width=360px>
+<img src="https://github.com/pawanpatil94/MNIST-Android-App/blob/master/Mnist-demo.gif" height=640px width=360px>
