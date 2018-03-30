@@ -1,5 +1,5 @@
 # MNIST-Android-App
-<h2>Android app which can identify hand written (single) digits.</h2> <br><br>
+<h3>Android app which can identify hand written (single) digits.</h3>
 <ul>
 <ol>The app is built in Java using Deeplearning4j library. The model is a 3 layer convolutional neural network which detects digits with ~98% accuracy.</ol>
 <ol>The model is trained on MNIST standard dataset and saved to disk.</ol>
