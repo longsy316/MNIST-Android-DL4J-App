@@ -20,10 +20,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.PointF;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +40,6 @@ import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,28 +49,19 @@ import java.io.OutputStream;
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
 
     private static final String TAG = "MainActivity";
+    private final String modelName = "Inception.zip";
+    private static final int PIXEL_WIDTH = 28;
+    final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 1;
     String internalStorage = null;
     String modelLocation = null;
-    final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 1;
-
-    private static final int PIXEL_WIDTH = 28;
-
+    MultiLayerNetwork model;
     private TextView mResultText;
-
     private float mLastX;
-
     private float mLastY;
-
     private DrawModel mModel;
     private DrawView mDrawView;
-
     private Button detectButton;
-
     private PointF mTmpPoint = new PointF();
-
-    MultiLayerNetwork model;
-
-
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
@@ -152,37 +140,31 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void LoadModel() throws InterruptedException {
         Toast.makeText(this, "Loading Model. Wait!!", Toast.LENGTH_LONG).show();
         internalStorage = getFilesDir().toString();
-        modelLocation = internalStorage+"/mnistmodel.zip";
+        modelLocation = internalStorage + "/" + modelName;
 
         Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
                     model = ModelSerializer.restoreMultiLayerNetwork(modelLocation, false);
-
-//                    InputStream stream = getAssets().open("mnistmodel.zip", AssetManager.ACCESS_BUFFER);
-
-//                    model = ModelSerializer.restoreMultiLayerNetwork(stream, false);
                     Log.d(TAG, "Load Success");
                 } catch (IOException e1) {
                     try {
                         copyAssets();
                         model = ModelSerializer.restoreMultiLayerNetwork(modelLocation, false);
-//                        InputStream stream = getAssets().open("mnistmodel.zip", AssetManager.ACCESS_BUFFER);
-//                        model = ModelSerializer.restoreMultiLayerNetwork(stream);
                     } catch (IOException e2) {
                         e2.printStackTrace();
                     }
                     e1.printStackTrace();
                 }
                 makeButtonVisible();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this,
-                                            "Now Draw", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this,
+                                "Now Draw", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }
         };
@@ -197,12 +179,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         try {
             files = assetManager.list("");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
 
-        for(String fileName : files) {
+        for (String fileName : files) {
             InputStream in = null;
             OutputStream out = null;
 
@@ -215,8 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 out.flush();
                 out.close();
                 out = null;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
         }
@@ -225,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void copyFiles(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int read;
-        while((read = in.read(buffer)) != -1) {
+        while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
         }
     }
@@ -324,7 +304,8 @@ class MyTask extends AsyncTask<Void, Void, Void> {
     MultiLayerNetwork model;
     TextView mResultText;
     Button detectButton;
-    MyTask(DrawView mDrawView, MultiLayerNetwork model, TextView mResultText, Button detectButton){
+
+    MyTask(DrawView mDrawView, MultiLayerNetwork model, TextView mResultText, Button detectButton) {
         this.mDrawView = mDrawView;
         this.val = "";
         this.model = model;
@@ -336,15 +317,15 @@ class MyTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         float pixels[] = mDrawView.getPixelData();
-        for(int i=0; i<pixels.length; i++) {
+        for (int i = 0; i < pixels.length; i++) {
             //standardise
             pixels[i] /= 255.0;
         }
         int[] shape = new int[]{1, 784};
-        INDArray testVector = Nd4j.create(pixels, shape,'c');
+        INDArray testVector = Nd4j.create(pixels, shape, 'c');
 
         int[] result = model.predict(testVector);
-        this.val = result[0]+"";
+        this.val = result[0] + "";
         return null;
     }
 
